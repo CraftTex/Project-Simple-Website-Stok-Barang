@@ -6,7 +6,18 @@
 
 @section('container')
 
-    {{ $errors }}
+@if ($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+
     <div class="d-flex justify-content-center">
         <div class="card col-lg p-3">
             <form action="/stock" method="POST">
@@ -40,6 +51,7 @@
                                         <th>Action</th>
                                     </tr>
                                 </thead>
+                                <input type="hidden" id="old-input-count" name="old-input-count">
                                 <tbody id="inputs">
                                     {{-- <tr>
                                         <td style="width: 50%">
@@ -83,11 +95,15 @@
         $(document).ready(function() {
             const max_input = 10;
             var input_count = 0;
+            const old_input = $('#old-input-count');
+
+            
 
             $('#add_new_input').click(function(e) {
                 if (input_count <= max_input) {
                     input_count++;
-                    $('#inputs').prepend('<tr>\
+                    old_input.val(input_count);
+                    $('#inputs').append('<tr>\
                                             <td style="width: 50%">\
                                                 <select name="inputData[' + input_count +'][barang_id]" id="inputData[' + input_count +'][barang_id]" class="form-select">\
                                                     @foreach ($barangs as $barang)\
@@ -114,14 +130,18 @@
                                         </tr>');
                 }
             })
-
+            for (let i = 0; i < {{ old('old-input-count',0) }}; i++) {
+                document.querySelector('#add_new_input').click();
+            }
             $(document).on('click','#delete-row', function(e) {
                 let row_item = $(this).parent().parent();
                 $(row_item).remove();
                 input_count--;
+                old_input.val(input_count);
             });
-
-            $()
         });
+    </script>
+    <script>
+        
     </script>
 @endsection

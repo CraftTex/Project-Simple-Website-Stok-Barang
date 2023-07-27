@@ -57,7 +57,10 @@ class StockController extends Controller
      */
     public function show(Stock $stock)
     {
-        //
+        return view('stock.show',[
+            'title' => 'View Stock ID: ' . $stock->id,
+            'stock' => $stock
+        ]);
     }
 
     /**
@@ -65,7 +68,12 @@ class StockController extends Controller
      */
     public function edit(Stock $stock)
     {
-        //
+        return view('stock.edit', [
+            'title' => 'Edit Data Stok',
+            'barang' => Barang::all(),
+            'stok' => $stock
+        ]);
+        
     }
 
     /**
@@ -73,7 +81,18 @@ class StockController extends Controller
      */
     public function update(UpdateStockRequest $request, Stock $stock)
     {
-        //
+        $rules = [
+            'barang_id' => 'required',
+            'jumlah' => 'required|numeric',
+            'jenis' => 'required|boolean',
+        ];
+
+        $validated = $request->validate($rules);
+
+        Stock::where('id',$stock->id)
+            ->update($validated);
+
+        return redirect('/stock')->with('success','Stock successfully updated!');
     }
 
     /**
@@ -81,12 +100,18 @@ class StockController extends Controller
      */
     public function destroy(Stock $stock)
     {
-        //
+        Stock::destroy($stock->id);
+
+        return redirect('/stock')->with('success','Stock successfully deleted!');
     }
 
     public function getDataTables()
     {
-        return DataTables::of(Stock::query())
+        return DataTables::of(Stock::query()->with('barang'))
+            ->addColumn('nama','{{ $model->barang->nama }}')
+            ->addColumn('jenis_str', '{{ ($model->jenis) ? "Masuk" : "Keluar" }}')
+            ->addColumn('actions','stock.partials.actions')
+            ->rawColumns(['actions'])
             ->make(true);
     }
 

@@ -54,7 +54,7 @@ class BarangController extends Controller
 
         $validated = $request->validate($rules);
 
-        
+
         if ($request->file('gambar')) {
             $validated['gambar'] = $request->file('gambar')->store('img-barang');
         }

@@ -2,7 +2,7 @@
 @extends('layouts.main')
 
 @section('title')
-    Data Stok Barang
+    History Input Stock
 @endsection
 
 
@@ -62,14 +62,15 @@
         },
         columns: [
             {data: 'id'},
-            {data: 'barang_id'},
+            {data: 'nama'},
             {data: 'jumlah'},
-            {data: 'jenis'}
+            {data: 'jenis_str'},
+            {data: 'actions'}
         ]
     });
 
     function alertWarning(string) {
-        string = '#' + string
+        string = '#del' + string
         Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",

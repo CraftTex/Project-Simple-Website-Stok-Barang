@@ -23,7 +23,13 @@ Route::get('/', function () {
     return view('index',[
         'title' => 'Home',
     ]);
-});
+})->middleware('auth');
+
+Route::get('home', function () {
+    return view('index',[
+        'title' => 'Home',
+    ]);
+})->middleware('auth');
 
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');
