@@ -41,7 +41,8 @@
                 <tr>
                     <th style="width: 5%">ID</th>
                     <th style="width: auto">Nama Barang</th>
-                    <th style="width: 15%">Stok</th>
+                    <th style="width: 15%">Jumlah</th>
+                    <th style="width: 15%">Jenis</th>
                     <th style="width: 15%">Actions</th>
                 </tr>
             </thead>
@@ -56,14 +57,14 @@
         processing: true,
         responsive: true,
         ajax: {
-            url: '/barang/items',
+            url: '/stock/getTable',
             type: 'GET',
         },
         columns: [
             {data: 'id'},
-            {data: 'nama'},
-            {data: 'harga_beli'},
-            {data: 'action'}
+            {data: 'barang_id'},
+            {data: 'jumlah'},
+            {data: 'jenis'}
         ]
     });
 

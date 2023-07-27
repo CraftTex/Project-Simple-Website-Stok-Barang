@@ -78,6 +78,7 @@
   <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
   <script src="/dist/js/tabler.min.js?1684106062" defer></script>
   <script src="/dist/js/demo.min.js?1684106062" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/v/bs5/dt-1.13.5/datatables.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

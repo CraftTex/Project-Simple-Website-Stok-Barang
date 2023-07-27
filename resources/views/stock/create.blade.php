@@ -5,12 +5,72 @@
 @endsection
 
 @section('container')
+
+    {{ $errors }}
     <div class="d-flex justify-content-center">
-        <div class="card col-md-6 p-3">
-            <form action="/barang" method="POST" enctype="multipart/form-data">
+        <div class="card col-lg p-3">
+            <form action="/stock" method="POST">
                 @csrf
+                <div class="card-header d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title d-inline">
+                            Input Stok
+                        </h4>
+                        <button class="btn btn-primary p-2" type="button" id="add_new_input">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+                                </svg>
+                        </button>
+                    </div>
+                    <div class="ml-auto">
+                        <button class="btn btn-primary"> Submit </button>
+                    </div>
+                </div>
+            <div class="card-body">
+                    @csrf
                     
-                <button type="submit" class="btn btn-primary">Create</button>
+                    <div class="form-fieldset">
+                        <ul>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Barang</th>
+                                        <th>Jumlah Stok</th>
+                                        <th>Jenis</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inputs">
+                                    {{-- <tr>
+                                        <td style="width: 50%">
+                                            <select name="id_barang[]" id="id_barang[]" class="form-select">
+                                                @foreach ($barangs as $barang)
+                                                    <option value="{{ $barang->id }}">{{ $barang->nama }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control" name="jumlah_stok[]" id="jumlah_stok[]" placeholder="Jumlah Stok...">
+                                        </td>
+                                        <td>
+                                            <select name="jenis[]" id="jenis[]" class="form-select">
+                                                <option value="1">Masuk</option>
+                                                <option value="0">Keluar</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" id="delete-row">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr> --}}
+                                </tbody>
+                            </table>
+                        </ul>        
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -18,21 +78,50 @@
 @endsection
 
 @section('scripts')
+
     <script>
-        
-        function previewImage() {
-            const gambar = document.querySelector('#gambar');
-            const gambarPreview = document.querySelector('.img-preview');
+        $(document).ready(function() {
+            const max_input = 10;
+            var input_count = 0;
 
-            gambarPreview.style.display = 'block';
+            $('#add_new_input').click(function(e) {
+                if (input_count <= max_input) {
+                    input_count++;
+                    $('#inputs').prepend('<tr>\
+                                            <td style="width: 50%">\
+                                                <select name="inputData[' + input_count +'][barang_id]" id="inputData[' + input_count +'][barang_id]" class="form-select">\
+                                                    @foreach ($barangs as $barang)\
+                                                        <option value="{{ $barang->id }}">{{ $barang->nama }}</option>\
+                                                    @endforeach\
+                                                </select>\
+                                            </td>\
+                                            <td>\
+                                                <input type="number" class="form-control" name="inputData[' + input_count +'][jumlah]" id="inputData[' + input_count +'][jumlah]" placeholder="Jumlah Stok...">\
+                                            </td>\
+                                            <td>\
+                                                <select name="inputData[' + input_count +'][jenis]" id="inputData[' + input_count +'][jenis]" class="form-select">\
+                                                    <option value="1">Masuk</option>\
+                                                    <option value="0">Keluar</option>\
+                                                </select>\
+                                            </td>\
+                                            <td>\
+                                                <button type="button" class="btn btn-danger" id="delete-row">\
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">\
+                                                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>\
+                                                    </svg>\
+                                                </button>\
+                                            </td>\
+                                        </tr>');
+                }
+            })
 
-            const ofReader = new FileReader();
+            $(document).on('click','#delete-row', function(e) {
+                let row_item = $(this).parent().parent();
+                $(row_item).remove();
+                input_count--;
+            });
 
-            ofReader.readAsDataURL(gambar.files[0]);
-
-            ofReader.onload = function(oFREvent) {
-                gambarPreview.src = oFREvent.target.result;
-            }
-        }
+            $()
+        });
     </script>
 @endsection

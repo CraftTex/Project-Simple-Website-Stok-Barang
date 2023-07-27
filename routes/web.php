@@ -38,4 +38,5 @@ Route::get('/barang/getSlug', [BarangController::class, 'getSlug']);
 Route::get('/barang/items', [BarangController::class, 'getDataTables']);
 Route::resource('/barang', BarangController::class)->middleware('auth');
 
+Route::get('/stock/getTable', [StockController::class, 'getDataTables']);
 Route::resource('/stock', StockController::class)->middleware('auth');
