@@ -20,7 +20,7 @@
                     </div>
                     <div class="col">
                         <label class="form-label">Jumlah</label>
-                        <p>{{ $stock->jumlah }}</p>
+                        <p>{{ number_format($stock->jumlah) }}</p>
                     </div>
                     <div class="col">
                         <label class="form-label">Jenis</label>

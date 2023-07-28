@@ -7,10 +7,13 @@ use App\Models\Barang;
 use App\Http\Requests\StoreBarangRequest;
 use App\Http\Requests\UpdateBarangRequest;
 use App\Models\Stock;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class BarangController extends Controller
 {
@@ -70,9 +73,21 @@ class BarangController extends Controller
      */
     public function show(Barang $barang)
     {
+        $stock = 0;
+        $stockData = Stock::where('barang_id', $barang->id)->get();
+
+        foreach ($stockData as $data) {
+            if ($data->jenis) {
+                $stock += $data->jumlah;
+            } else {
+                $stock -= $data->jumlah;
+            }
+        }
+
         return view('barang.show',[
             'title' => "Detail " . $barang->nama,
             'barang' => $barang,
+            'stock' => $stock,
         ]);
     }
 
@@ -138,6 +153,12 @@ class BarangController extends Controller
     {
         return DataTables::of(Barang::query())
             ->addColumn('action', 'barang.partials.actions')
+            ->editColumn('harga_beli',function($row){
+                return 'Rp' . number_format($row->harga_beli);
+            })
+            ->editColumn('harga_jual',function($row){
+                return 'Rp' . number_format($row->harga_jual);
+            })
             ->make(true);
     }
 
@@ -162,5 +183,52 @@ class BarangController extends Controller
 
         return $stock;
 
+    }
+
+    public function viewPDF()
+    {
+        $barang = Barang::all();
+
+        $pdf = PDF::loadView('barang.print', ['barang' => $barang]);
+
+        return $pdf->stream();
+    }
+
+    public function createExcel()
+    {
+        $spreadsheet = new Spreadsheet;
+
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->fromArray(
+            ['ID', 'Nama Barang', 'Harga Beli', 'Harga Jual', 'Deskripsi'],
+            NULL,
+            'A1'
+        ); //the headers
+
+        $barang = Barang::all();
+
+        foreach($barang as $index => $data) {
+            $toInsert = [
+                $data['id'],
+                $data['nama'],
+                $data['harga_beli'],
+                $data['harga_jual'],
+                $data['deskripsi'],
+            ];
+            $row = "A" . strval($index + 2);
+            $sheet->fromArray(
+                $toInsert,
+                NULL,
+                $row
+            );
+        }
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Data-Barang.xlsx"');
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+
+        $writer->save('php://output');
     }
 }

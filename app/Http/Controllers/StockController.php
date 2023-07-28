@@ -6,7 +6,10 @@ use App\Models\Stock;
 use App\Http\Requests\StoreStockRequest;
 use App\Http\Requests\UpdateStockRequest;
 use App\Models\Barang;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\Facades\DataTables;
+use PDF;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class StockController extends Controller
 {
@@ -109,12 +112,63 @@ class StockController extends Controller
     {
         return DataTables::of(Stock::query()->with('barang'))
             ->addColumn('nama','{{ $model->barang->nama }}')
-            ->addColumn('jenis_str', '{{ ($model->jenis) ? "Masuk" : "Keluar" }}')
+            ->editColumn('jenis', function($row) {
+                return (($row->jenis) ? 'Masuk' : 'Keluar');
+            })
+            ->editColumn('jumlah', function($row) {
+                return number_format($row->jumlah);
+            })
             ->addColumn('actions','stock.partials.actions')
             ->rawColumns(['actions'])
             ->make(true);
     }
 
-    
+    public function viewPDF()
+    {
+        $stock = Stock::with('barang')->get();
 
+        $pdf = PDF::loadView('stock.print', ['stock' => $stock]);
+
+        return $pdf->stream();
+    }
+
+    public function createExcel()
+    {
+        $spreadsheet = new Spreadsheet;
+
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->fromArray(
+            ['ID Stock','Tanggal Input' ,'Nama Barang', 'ID Barang', 'Jumlah', 'Jenis'],
+            NULL,
+            'A1'
+        ); //the headers
+
+        $stock = Stock::with('barang')->get();
+
+
+        foreach($stock as $index => $data) {
+            $toInsert = [
+                $data->id,
+                strval($data->created_at->format('d-m-Y, h:i:s A')),
+                $data->barang->nama,
+                $data->barang_id,
+                $data->jumlah,
+                (($data->jenis) ? 'Masuk' : 'Keluar'),
+            ];
+            $row = "A" . strval($index + 2);
+            $sheet->fromArray(
+                $toInsert,
+                NULL,
+                $row
+            );
+        }
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="Data-Input-Stock.xlsx"');
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+
+        $writer->save('php://output');
+    }
 }

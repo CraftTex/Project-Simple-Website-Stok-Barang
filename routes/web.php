@@ -39,11 +39,14 @@ Route::post('/logout', [LoginController::class, 'logout']);
 Route::get('/register', [RegisterController::class,'index']);
 Route::post('/register', [RegisterController::class,'store']);
 
-
+Route::post('/barang/createExcel', [BarangController::class, 'createExcel']);
+Route::post('/barang/viewPDF', [BarangController::class, 'viewPDF']);
 Route::get('/barang/{barang:slug}/stock', [BarangController::class, 'getBarangStock']);
 Route::get('/barang/getSlug', [BarangController::class, 'getSlug']);
 Route::get('/barang/items', [BarangController::class, 'getDataTables']);
 Route::resource('/barang', BarangController::class)->middleware('auth');
 
+Route::post('/stock/createExcel', [StockController::class, 'createExcel']);
+Route::post('/stock/viewPDF', [StockController::class, 'viewPDF']);
 Route::get('/stock/getTable', [StockController::class, 'getDataTables']);
 Route::resource('/stock', StockController::class)->middleware('auth');

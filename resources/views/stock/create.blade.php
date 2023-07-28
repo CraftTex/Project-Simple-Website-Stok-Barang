@@ -45,7 +45,7 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Nama Barang</th>
+                                        <th>Nama Barang (id)</th>
                                         <th>Jumlah Stok</th>
                                         <th>Jenis</th>
                                         <th>Action</th>
@@ -107,7 +107,7 @@
                                             <td style="width: 50%">\
                                                 <select name="inputData[' + input_count +'][barang_id]" id="inputData[' + input_count +'][barang_id]" class="form-select">\
                                                     @foreach ($barangs as $barang)\
-                                                        <option value="{{ $barang->id }}">{{ $barang->nama }}</option>\
+                                                        <option value="{{ $barang->id }}">{{ $barang->nama }} ({{ $barang->id }})</option>\
                                                     @endforeach\
                                                 </select>\
                                             </td>\

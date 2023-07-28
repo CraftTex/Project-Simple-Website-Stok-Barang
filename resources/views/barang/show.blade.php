@@ -24,14 +24,14 @@
                             <b>ID: </b> {{ $barang->id }}
                         </div>
                         <div class="d-block">
-                            <b>Harga Beli: </b> Rp. {{ $barang->harga_beli }}
+                            <b>Harga Beli: </b> Rp. {{ number_format($barang->harga_beli) }}
                         </div>
                         <div class="d-block">
-                            <b>Harga Jual: </b> Rp. {{ $barang->harga_jual }}
+                            <b>Harga Jual: </b> Rp. {{ number_format($barang->harga_jual) }}
                         </div>
                     </div>
                     <div class="form-fieldset mb-3" id="stock-information">
-                        <b>Stock Sekarang: </b> 
+                        <b>Stock Sekarang: </b> {{ number_format($stock) }} 
                     </div>
                     <div class="form-fieldset mb-3">
                         <div class="form-label d-block">
@@ -50,7 +50,7 @@
 @endsection
 
 @section('scripts')
-    <script>
+    {{-- <script>
         $(document).ready(function () {
             
             $.get('/barang/{{ $barang->slug }}/stock', function(stock) {
@@ -58,5 +58,5 @@
             })
             
         });
-    </script>
+    </script> --}}
 @endsection
