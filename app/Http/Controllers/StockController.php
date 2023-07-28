@@ -115,4 +115,6 @@ class StockController extends Controller
             ->make(true);
     }
 
+    
+
 }

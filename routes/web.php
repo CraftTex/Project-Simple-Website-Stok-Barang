@@ -40,6 +40,7 @@ Route::get('/register', [RegisterController::class,'index']);
 Route::post('/register', [RegisterController::class,'store']);
 
 
+Route::get('/barang/{barang:slug}/stock', [BarangController::class, 'getBarangStock']);
 Route::get('/barang/getSlug', [BarangController::class, 'getSlug']);
 Route::get('/barang/items', [BarangController::class, 'getDataTables']);
 Route::resource('/barang', BarangController::class)->middleware('auth');

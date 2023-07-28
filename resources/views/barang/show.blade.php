@@ -19,7 +19,7 @@
                     @endif
                 </div>
                 <div class="col ml-3">
-                    <div class="form-fieldset">
+                    <div class="form-fieldset mb-3">
                         <div class="d-block">
                             <b>ID: </b> {{ $barang->id }}
                         </div>
@@ -30,7 +30,10 @@
                             <b>Harga Jual: </b> Rp. {{ $barang->harga_jual }}
                         </div>
                     </div>
-                    <div class="form-fieldset">
+                    <div class="form-fieldset mb-3" id="stock-information">
+                        <b>Stock Sekarang: </b> 
+                    </div>
+                    <div class="form-fieldset mb-3">
                         <div class="form-label d-block">
                             <b>Deskripsi</b>
                         </div>
@@ -44,4 +47,16 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function () {
+            
+            $.get('/barang/{{ $barang->slug }}/stock', function(stock) {
+                $('#stock-information').append(stock)
+            })
+            
+        });
+    </script>
 @endsection

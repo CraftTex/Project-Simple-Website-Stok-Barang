@@ -6,6 +6,7 @@ use App\DataTables\barangsDataTable;
 use App\Models\Barang;
 use App\Http\Requests\StoreBarangRequest;
 use App\Http\Requests\UpdateBarangRequest;
+use App\Models\Stock;
 use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -144,5 +145,22 @@ class BarangController extends Controller
     {
         $slug = SlugService::createSlug(Barang::class, 'slug', $request->nama);
         return response()->json(['slug' => $slug]);
+    }
+
+    public function getBarangStock(Barang $barang)
+    {
+        $stock = 0;
+        $stockData = Stock::where('barang_id', $barang->id)->get();
+
+        foreach ($stockData as $data) {
+            if ($data->jenis) {
+                $stock += $data->jumlah;
+            } else {
+                $stock -= $data->jumlah;
+            }
+        }
+
+        return $stock;
+
     }
 }
