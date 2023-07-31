@@ -183,6 +183,12 @@ class StockController extends Controller
                 'color' => ['rgb' => 'e3e3e3']
             ]
         ];
+
+        $number = [
+            'numberFormat' => [
+                'formatCode' => '#,##0'
+            ]
+        ];
         
         $sheet->getStyle('A1:F1')->applyFromArray($headerStyle);
         $sheet->getColumnDimension('A')->setAutoSize(true);
@@ -192,6 +198,7 @@ class StockController extends Controller
         $sheet->getColumnDimension('E')->setAutoSize(true);
         $sheet->getColumnDimension('F')->setAutoSize(true);
         $sheet->getStyle('A2:F' . strval($stock->count() + 1))->applyFromArray($bodyStyle);
+        $sheet->getStyle('E2:E' . strval($stock->count() + 1))->applyFromArray($number);
         
         foreach($stock as $index => $data) {
             $toInsert = [

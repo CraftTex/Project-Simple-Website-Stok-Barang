@@ -243,6 +243,12 @@ class BarangController extends Controller
                 'color' => ['rgb' => 'e3e3e3']
             ]
         ];
+
+        $number = [
+            'numberFormat' => [
+                'formatCode' => 'Rp#,##0.00'
+            ]
+        ];
         
         $sheet->getStyle('A1:E1')->applyFromArray($headerStyle);
         $sheet->getStyle('E')->getAlignment()->setWrapText(true);
@@ -252,6 +258,7 @@ class BarangController extends Controller
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
         $sheet->getStyle('A2:E' . strval($barang->count() + 1))->applyFromArray($bodyStyle);
+        $sheet->getStyle('C2:D' . strval($barang->count() + 1))->applyFromArray($number);
         
 
         foreach($barang as $index => $data) {
