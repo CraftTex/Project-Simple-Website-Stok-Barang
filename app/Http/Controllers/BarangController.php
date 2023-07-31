@@ -14,6 +14,8 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class BarangController extends Controller
 {
@@ -197,6 +199,7 @@ class BarangController extends Controller
     public function createExcel()
     {
         $spreadsheet = new Spreadsheet;
+        $barang = Barang::all();
 
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -206,7 +209,50 @@ class BarangController extends Controller
             'A1'
         ); //the headers
 
-        $barang = Barang::all();
+        $headerStyle = [
+            'borders' => [
+                'outline' => ['borderStyle' => 'thick', 'color' => [Color::COLOR_BLACK]]
+            ],
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'ffffff']
+            ],
+            'fill' => [
+                'startColor' => ['rgb' => '107c41'],
+                'fillType' => Fill::FILL_SOLID
+            ]
+        ];
+
+        $bodyStyle = [
+            'borders' => [
+                'outline' => ['borderStyle' => 'thick', 'color' => [Color::COLOR_BLACK]],
+                'vertical' => ['borderStyle' => 'thin', 'color' => ['rgb' => 'cccccc']]
+            ]
+        ];
+
+        $bodyOdd = [
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'color' => [Color::COLOR_WHITE]
+            ]
+        ];
+        
+        $bodyEven = [
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'color' => ['rgb' => 'e3e3e3']
+            ]
+        ];
+        
+        $sheet->getStyle('A1:E1')->applyFromArray($headerStyle);
+        $sheet->getStyle('E')->getAlignment()->setWrapText(true);
+        $sheet->getColumnDimension('E')->setWidth(512,'px');
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getStyle('A2:E' . strval($barang->count() + 1))->applyFromArray($bodyStyle);
+        
 
         foreach($barang as $index => $data) {
             $toInsert = [
@@ -222,6 +268,12 @@ class BarangController extends Controller
                 NULL,
                 $row
             );
+
+            if (($index) % 2 == 0 ) {
+                $sheet->getStyle('A' . strval($index + 2) . ':E' . strval($index + 2))->applyFromArray($bodyEven);
+            } else {
+                $sheet->getStyle('A' . strval($index + 2) . ':E' . strval($index + 2))->applyFromArray($bodyOdd);
+            }
         }
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

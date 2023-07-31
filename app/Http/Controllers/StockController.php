@@ -10,6 +10,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\Facades\DataTables;
 use PDF;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Color;
 
 class StockController extends Controller
 {
@@ -146,7 +148,51 @@ class StockController extends Controller
 
         $stock = Stock::with('barang')->get();
 
+        
+        $headerStyle = [
+            'borders' => [
+                'outline' => ['borderStyle' => 'thick', 'color' => [Color::COLOR_BLACK]]
+            ],
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'ffffff']
+            ],
+            'fill' => [
+                'startColor' => ['rgb' => '107c41'],
+                'fillType' => Fill::FILL_SOLID
+            ]
+        ];
 
+        $bodyStyle = [
+            'borders' => [
+                'outline' => ['borderStyle' => 'thick', 'color' => [Color::COLOR_BLACK]],
+                'vertical' => ['borderStyle' => 'thin', 'color' => ['rgb' => 'cccccc']]
+            ]
+        ];
+
+        $bodyOdd = [
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'color' => [Color::COLOR_WHITE]
+            ]
+        ];
+        
+        $bodyEven = [
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'color' => ['rgb' => 'e3e3e3']
+            ]
+        ];
+        
+        $sheet->getStyle('A1:F1')->applyFromArray($headerStyle);
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getStyle('A2:F' . strval($stock->count() + 1))->applyFromArray($bodyStyle);
+        
         foreach($stock as $index => $data) {
             $toInsert = [
                 $data->id,
@@ -162,6 +208,12 @@ class StockController extends Controller
                 NULL,
                 $row
             );
+
+            if (($index) % 2 == 0 ) {
+                $sheet->getStyle('A' . strval($index + 2) . ':F' . strval($index + 2))->applyFromArray($bodyEven);
+            } else {
+                $sheet->getStyle('A' . strval($index + 2) . ':F' . strval($index + 2))->applyFromArray($bodyOdd);
+            }
         }
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
