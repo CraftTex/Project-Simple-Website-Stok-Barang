@@ -146,6 +146,15 @@ class BarangController extends Controller
         if($barang->gambar){
             Storage::delete($barang->gambar);
         }
+
+        $stocks = Stock::where('barang_id', $barang->id)->get();
+
+        if ($stocks) {
+            foreach ($stocks as $stock) {
+                Stock::destroy($stock->id);
+            }
+        }
+
         Barang::destroy($barang->id);
 
         return redirect('/barang')->with('success','Barang dihapus!');
